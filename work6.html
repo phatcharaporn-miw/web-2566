@@ -27,19 +27,18 @@
         const Button = RB.Button;
         const Modal = RB.Modal;
 
-        const firebaseConfig = {
-        apiKey: "AIzaSyAEnPP1zMx30n-BS0XTciEzn3Il6xG9IYg",
-        authDomain: "web2566-34401.firebaseapp.com",
-        projectId: "web2566-34401",
-        storageBucket: "web2566-34401.appspot.com",
-        messagingSenderId: "126920306114",
-        appId: "1:126920306114:web:ae824988d4dd744347ba5b",
-        measurementId: "G-C2H8HZW093"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    const firebaseConfig = {
+    apiKey: "AIzaSyAEnPP1zMx30n-BS0XTciEzn3Il6xG9IYg",
+    authDomain: "web2566-34401.firebaseapp.com",
+    projectId: "web2566-34401",
+    storageBucket: "web2566-34401.appspot.com",
+    messagingSenderId: "126920306114",
+    appId: "1:126920306114:web:ae824988d4dd744347ba5b",
+    measurementId: "G-C2H8HZW093"
+  };
+  // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);      
+    const db = firebase.firestore();
 
         class App extends React.Component {
             title = (
@@ -49,7 +48,7 @@
             );
             footer = (
                 <div>
-                    By 653380251-7 Nitthawan Phooknoi <br />
+                    By 653380253-3 Phatcharaporn Nilphong <br />
                     College of Computing, Khon Kaen University
                 </div>
             );
@@ -79,7 +78,7 @@
                         </Card.Body>
                         <Card.Footer>
                             <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา :</b><br />
-                            <TextInput label="ID" app={this} value="stdid" style={{ width: 120 }} />
+                            <TextInput label="ID" app={this} value="stdid" style={{ width: 120 }} /> 
                             <TextInput label="คำนำหน้า" app={this} value="stdtitle" style={{ width: 100 }} />
                             <TextInput label="ชื่อ" app={this} value="stdfname" style={{ width: 120 }} />
                             <TextInput label="สกุล" app={this} value="stdlname" style={{ width: 120 }} />
