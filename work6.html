@@ -20,159 +20,221 @@
   </head>
   <body>
     <div id="myapp" class="container p-4"></div> 
-    <script type="text/babel" src="work6.js">
+    <script type="text/babel">
+        const RB = ReactBootstrap;
 
-      
-db.collection("students").get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} =>`,doc.data());
-    });
-});
+        const Card = RB.Card;
+        const Button = RB.Button;
+        const Modal = RB.Modal;
 
+        const firebaseConfig = {
+        apiKey: "AIzaSyAEnPP1zMx30n-BS0XTciEzn3Il6xG9IYg",
+        authDomain: "web2566-34401.firebaseapp.com",
+        projectId: "web2566-34401",
+        storageBucket: "web2566-34401.appspot.com",
+        messagingSenderId: "126920306114",
+        appId: "1:126920306114:web:ae824988d4dd744347ba5b",
+        measurementId: "G-C2H8HZW093"
+    };
 
-const RB=ReactBootstrap;
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
 
-class App extends React.Component{
-    title = (
-        <RB.Alert variant="info">
-            <b>Work6 :</b> Firebase
-        </RB.Alert>
-    );
-    footer = (
-        <div>
-            By 653380253-3 นางสาวพัชราพร นิลพงษ์<br />
-            College of Computing, Khon Kaen University
-        </div>
-    );
-    state = {
-        scene: 0,
-        students:[],
-        stdid:"",
-        stdtitle:"",
-        stdfname:"",
-        stdlname:"",
-        stdemail:"",
-        stdphone:"",
-    }
- 
-    render() {
-       // var stext = JSON.stringify(this.state.students);  
-        return (
-            <Card>
-              <Card.Header>{this.title}</Card.Header>  
-              <Card.Body>
-                <Button onClick={()=>this.readData()}>Read Data</Button>
-                <Button onClick={()=>this.autoRead()}>Auto Read</Button>
+        class App extends React.Component {
+            title = (
+                <RB.Alert variant="info">
+                    <b>Work6 :</b> Firebase
+                </RB.Alert>
+            );
+            footer = (
                 <div>
-                <StudentTable data={this.state.students} app={this}/>  
+                    By 653380251-7 Nitthawan Phooknoi <br />
+                    College of Computing, Khon Kaen University
                 </div>
-              </Card.Body>
-              <Card.Footer>
-              <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา :</b><br/>
-              <TextInput label="ID" app={this} value="stdid" style={{width:120}}/>  
-              <TextInput label="คำนำหน้า" app={this} value="stdtitle" style={{width:100}} />
-              <TextInput label="ชื่อ" app={this} value="stdfname" style={{width:120}}/>
-              <TextInput label="สกุล" app={this} value="stdlname" style={{width:120}}/>
-              <TextInput label="Email" app={this} value="stdemail" style={{width:150}} />        
-              <TextInput label="Phone" app={this} value="stdphone" style={{width:120}}/>
-              <Button onClick={()=>this.insertData()}>Save</Button>
-              </Card.Footer>
-              <Card.Footer>{this.footer}</Card.Footer>
-            </Card>          
-          );
-        }
+            );
+            state = {
+                scene: 0,
+                students: [],
+                stdid: "",
+                stdfname: "",
+                stdlname: "",
+                stdemail: "",
+                stdphone: "",
+                saveSuccess: false,
+            }
 
-        insertData(){
-            db.collection("students").doc(this.state.stdid).set({
-               title : this.state.stdtitle,
-               fname : this.state.stdfname,
-               lname : this.state.stdlname,
-               phone : this.state.stdphone,
-               email : this.state.stdemail,
-            });
-        }    
+            render() {
+                return (
+                    <Card>
+                        <Card.Header>{this.title}</Card.Header>
+                        <Card.Body>
+                            <Button onClick={() => this.readData()}>Read Data</Button>
+                            <Button onClick={() => this.autoRead()}>Auto Read</Button>
+                            
+                            <div>
+                                <StudentTable data={this.state.students} app={this} />
+                            </div>
+                            
+                        </Card.Body>
+                        <Card.Footer>
+                            <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา :</b><br />
+                            <TextInput label="ID" app={this} value="stdid" style={{ width: 120 }} />
+                            <TextInput label="คำนำหน้า" app={this} value="stdtitle" style={{ width: 100 }} />
+                            <TextInput label="ชื่อ" app={this} value="stdfname" style={{ width: 120 }} />
+                            <TextInput label="สกุล" app={this} value="stdlname" style={{ width: 120 }} />
+                            <TextInput label="Email" app={this} value="stdemail" style={{ width: 150 }} />
+                            <TextInput label="Phone" app={this} value="stdphone" style={{ width: 120 }} />
+                            <Button onClick={() => this.insertData()}>Save</Button>
+                        </Card.Footer>
+                        <Card.Footer>{this.footer}</Card.Footer>
+
+                        <SaveSuccessModal
+                            show={this.state.saveSuccess}
+                            onHide={() => this.setState({ saveSuccess: false })}
+                        />
+                    </Card>
+                );
+            }
+
+            readData() {
+                db.collection("students").get().then((querySnapshot) => {
+                    var stdlist = [];
+                    querySnapshot.forEach((doc) => {
+                        stdlist.push({ id: doc.id, ...doc.data() });
+                    });
+                    this.setState({ students: stdlist });
+                });
+            }
+
+            autoRead() {
+                db.collection("students").onSnapshot((querySnapshot) => {
+                    var stdlist = [];
+                    querySnapshot.forEach((doc) => {
+                        stdlist.push({ id: doc.id, ...doc.data() });
+                    });
+                    this.setState({ students: stdlist });
+                });
+            }
+
+            insertData() {
+                db.collection("students").doc(this.state.stdid).set({
+                    title: this.state.stdtitle,
+                    fname: this.state.stdfname,
+                    lname: this.state.stdlname,
+                    phone: this.state.stdphone,
+                    email: this.state.stdemail,
+                });
+                
+
+                // Set saveSuccess to true to trigger the modal
+                this.setState({
+                    saveSuccess: true,
+                    // Clear input fields
+                    stdid: "",
+                    stdtitle: "",
+                    stdfname: "",
+                    stdlname: "",
+                    stdemail: "",
+                    stdphone: "",
+                });
+            }
+
+            edit(std) {
+                this.setState({
+                    stdid: std.id,
+                    stdtitle: std.title,
+                    stdfname: std.fname,
+                    stdlname: std.lname,
+                    stdemail: std.email,
+                    stdphone: std.phone,
+                })
+            }
+
+            delete(std) {
+                if (confirm("ต้องการลบข้อมูล")) {
+                    db.collection("students").doc(std.id).delete();
+                }
+            }
+            
+        }
         
-        edit(std){      
-            this.setState({
-             stdid    : std.id,
-             stdtitle : std.title,
-             stdfname : std.fname,
-             stdlname : std.lname,
-             stdemail : std.email,
-             stdphone : std.phone,
-            })
-         }
-     
+        
 
-   readData(){
-    db.collection("students").get().then((querySnapshot) => {
-        var stdlist=[];
-        querySnapshot.forEach((doc) => {
-            stdlist.push({id:doc.id,... doc.data()});                
-        });
-        console.log(stdlist);
-        this.setState({students: stdlist});
-        });
-    } 
+        const container = document.getElementById("myapp");
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
 
-        autoRead(){
-            db.collection("students").onSnapshot((querySnapshot) => {
-                var stdlist=[];
-                querySnapshot.forEach((doc) => {
-                    stdlist.push({id:doc.id,... doc.data()});                
-                });          
-                this.setState({students: stdlist});
-            });
+        function StudentTable({ data, app }) {
+            return (
+                <table className='table'>
+                    <tbody>
+                        <tr>
+                            <td>รหัส</td>
+                            <td>คำนำหน้า</td>
+                            <td>ชื่อ</td>
+                            <td>สกุล</td>
+                            <td>email</td>
+                        </tr>
+                        {data.map((s) => (
+                            <tr key={s.id}>
+                                <td>{s.id}</td>
+                                <td>{s.title}</td>
+                                <td>{s.fname}</td>
+                                <td>{s.lname}</td>
+                                <td>{s.email}</td>
+                                <td><EditButton std={s} app={app} /></td>
+                                <td><DeleteButton std={s} app={app} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
         }
-}
 
-const container = document.getElementById("myapp");
-const root = ReactDOM.createRoot(container);
-root.render(<App />);
+        function TextInput({ label, app, value, style }) {
+            return <label className="form-label">
+                {label}:
+                <input className="form-control" style={style}
+                    value={app.state[value]} onChange={(ev) => {
+                        var s = {};
+                        s[value] = ev.target.value;
+                        app.setState(s)
+                    }
+                    }></input>
+            </label>;
+        }
 
-function StudentTable({data}){
-    var rows=[];
-    for(var s of data){
-        rows.push(<tr>
-        <td>{s.id}</td>
-        <td>{s.title}</td>
-        <td>{s.fname}</td>
-        <td>{s.lname}</td>
-        <td>{s.email}</td>
-        </tr>)
-    }
-    return <table className='table'>
-    <tr>
-        <td>รหัส</td>
-        <td>คำนำหน้า</td>
-        <td>ชื่อ</td>
-        <td>สกุล</td>
-        <td>email</td>
-        </tr>
-        {rows}
-    </table>
+        function EditButton({ std, app }) {
+            return <button onClick={() => app.edit(std)}>แก้ไข</button>
+        }
 
-}
+        function DeleteButton({ std, app }) {
+            return <button onClick={() => app.delete(std)}>ลบ</button>
+        }
 
-function TextInput({label,app,value,style}){
-    return <label className="form-label">
-    {label}:    
-     <input className="form-control" style={style}
-     value={app.state[value]} onChange={(ev)=>{
-         var s={};
-         s[value]=ev.target.value;
-         app.setState(s)}
-     }></input>
-   </label>;  
-  }
-
-  function EditButton({std,app}){
-    return <button onClick={()=>app.edit(std)}>แก้ไข</button>
-   }
- 
- 
+        function SaveSuccessModal({ show, onHide }) {
+            return (
+                <Modal show={show} onHide={onHide}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>บันทึกข้อมูลสำเร็จ</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        ข้อมูลได้รับการบันทึกเรียบร้อยแล้ว
+                    </Modal.Body>
+                </Modal>
+            );
+        }
     </script>
 
+
+    <script type="text/babel" src="work6.js"></script>
+
+    <div class="position-fixed top-0 start-0 p-3">
+        <a href="index.html" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i>กลับ
+        </a>
+    </div>
 
 
 </body>
